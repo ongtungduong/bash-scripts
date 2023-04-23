@@ -62,8 +62,8 @@ echo "$USER:$PASSWORD" | chpasswd
 
 # Configure PostgreSQL for postgres_exporter
 echo "Configuring PostgreSQL for postgres_exporter"
-echo "shared_preload_libraries = 'pg_stat_statements'" >> /etc/postgresql/$POSTGRES_VERSION/main/postgresql.conf
-echo "pg_stat_statements.track = all" >> /etc/postgresql/$POSTGRES_VERSION/main/postgresql.conf
+sed -i "s/^#*\s*\(shared_preload_libraries\s*=\s*\).*/\1'pg_stat_statements'/" /etc/postgresql/$POSTGRES_VERSION/main/postgresql.conf
+sed -i "s/^#*\s*\(pg_stat_statements.track\s*=\s*\).*/\1all/" /etc/postgresql/$POSTGRES_VERSION/main/postgresql.conf
 
 echo "Restarting PostgreSQL"
 systemctl restart postgresql
