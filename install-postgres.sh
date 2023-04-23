@@ -15,7 +15,7 @@ echo "Installing prerequisites for installing PostgreSQL"
 prerequisites=(curl gpg gnupg2 software-properties-common apt-transport-https lsb-release ca-certificates)
 for prerequisite in "${prerequisites[@]}"
 do
-    sudo apt install -y "$package"
+    sudo apt install -y "$prerequisite"
 done
 
 # Add PostgreSQL repository to Ubuntu
