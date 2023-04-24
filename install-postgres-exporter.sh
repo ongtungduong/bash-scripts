@@ -73,7 +73,7 @@ systemctl restart postgresql
 echo "PostgreSQL configured and restarted"
 
 sudo -i -u postgres psql -c "CREATE USER $USER WITH PASSWORD '$PASSWORD';"
-sudo -i -u postgres psql $POSTGRES_EXPORTER_FOLDER/postgres_exporter.sql
+sudo -i -u postgres psql -f $POSTGRES_EXPORTER_FOLDER/postgres_exporter.sql
 echo "postgres_exporter configured"
 
 # Reload systemd daemon and start postgres_exporter
