@@ -2,7 +2,7 @@
 
 # Run this script with sudo
 
-# CHANGE THESE ENVIRONMENT VARIABLES
+# CHANGE THIS ENVIRONMENT VARIABLES
 POSTGRES_VERSION=15 # Change me
 EXPORTER_VERSION=0.12.0 # Change me
 EXPORTER_PORT=17018 # Change me
@@ -68,7 +68,10 @@ echo "$USER:$PASSWORD" | chpasswd
 
 # Configure and restart PostgreSQL
 sed -i "s/^#*\s*\(shared_preload_libraries\s*=\s*\).*/\1'pg_stat_statements'/" /etc/postgresql/$POSTGRES_VERSION/main/postgresql.conf
-sed -i "s/^#*\s*\(pg_stat_statements.track\s*=\s*\).*/\1all/" /etc/postgresql/$POSTGRES_VERSION/main/postgresql.conf
+if grep -q -E pg_stat_statements.track /etc/postgresql/$POSTGRES_VERSION/main/postgresql.conf ; then       
+    sed -i "s/^#*\s*\(pg_stat_statements.track\s*=\s*\).*/\1all/" /etc/postgresql/$POSTGRES_VERSION/main/postgresql.conf
+else echo pg_stat_statements.track = all | tee -a /etc/postgresql/$POSTGRES_VERSION/main/postgresql.conf
+fi
 systemctl restart postgresql
 echo "PostgreSQL configured and restarted"
 
