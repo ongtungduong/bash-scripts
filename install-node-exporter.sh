@@ -1,13 +1,12 @@
 # !/bin/bash
 
-# CHANGE THESE ENVIRONMENT VARIABLES
-EXPORTER_VERSION=1.5.0  # Change me
-EXPORTER_PORT=17017 # Change me
-PASSWORD= # Change me
+PASSWORD= # CHANGE PASSWORD
+EXPORTER_VERSION=1.5.0
+EXPORTER_PORT=17017
 
 # Download node_exporter
 sudo wget https://github.com/prometheus/node_exporter/releases/download/v$EXPORTER_VERSION/node_exporter-$EXPORTER_VERSION.linux-amd64.tar.gz
-sudo tar xvfz node_exporter-$EXPORTER_VERSION.linux-amd64.tar.gz
+sudo tar xzf node_exporter-$EXPORTER_VERSION.linux-amd64.tar.gz
 sudo mv node_exporter-$EXPORTER_VERSION.linux-amd64/node_exporter /usr/local/bin
 sudo rm -rf node_exporter-$EXPORTER_VERSION.linux-amd64.tar.gz node_exporter-$EXPORTER_VERSION.linux-amd64
 echo "node_exporter v$EXPORTER_VERSION downloaded"
