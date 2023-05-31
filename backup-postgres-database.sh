@@ -11,7 +11,7 @@ mkdir -p $FILE_PATH/$DB_NAME
 cd $FILE_PATH/$DB_NAME
 
 # Backup database using pg_dump, split into multiple files and compress using gzip
-pg_dump postgres://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME | split -b 2G -d -a 3 --filter="gzip > \"$DB_NAME-\$FILE\".gz"
+pg_dump postgres://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME | split -b 2G --filter="gzip > \"$DB_NAME-\$FILE\".gz"
 
 # Compress the backup directory
 cd ..
