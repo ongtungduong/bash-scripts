@@ -10,6 +10,5 @@ sudo apt-get install -y cadvisor
 
 # Reload systemd daemon and start cadvisor
 sudo systemctl daemon-reload
-sudo systemctl start cadvisor
-sudo systemctl enable cadvisor
+sudo systemctl enable cadvisor --now
 sudo systemctl status cadvisor --no-pager
