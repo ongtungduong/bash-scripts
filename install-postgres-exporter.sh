@@ -4,13 +4,13 @@
 
 # CHANGE THIS ENVIRONMENT VARIABLES
 POSTGRES_VERSION=15 # Change me
-EXPORTER_VERSION=0.12.0 # Change me
-EXPORTER_PORT=17018 # Change me
-PASSWORD=QmaQ4K6Tv9 # Change me
+PASSWORD= # Change me
+EXPORTER_VERSION=0.12.0
+EXPORTER_PORT=17018
 
 # Download postgres_exporter
 curl -LJO "https://github.com/prometheus-community/postgres_exporter/releases/download/v$EXPORTER_VERSION/postgres_exporter-$EXPORTER_VERSION.linux-amd64.tar.gz"
-tar xvfz postgres_exporter-$EXPORTER_VERSION.linux-amd64.tar.gz
+tar xzf postgres_exporter-$EXPORTER_VERSION.linux-amd64.tar.gz
 mv postgres_exporter-$EXPORTER_VERSION.linux-amd64/postgres_exporter /usr/local/bin
 rm -rf postgres_exporter-$EXPORTER_VERSION.linux-amd64 postgres_exporter-$EXPORTER_VERSION.linux-amd64.tar.gz
 echo "Postgres Exporter Version $EXPORTER_VERSION downloaded"
@@ -35,11 +35,6 @@ echo "postgres_exporter.env created"
 curl -LJO "https://raw.githubusercontent.com/prometheus-community/postgres_exporter/master/queries.yaml"
 mv queries.yaml $POSTGRES_EXPORTER_FOLDER
 echo "queries.yaml created"
-
-# Create postgres_exporter.sql
-curl -LJO "https://gist.githubusercontent.com/ongtungduong/a290705ecde7ede35c30b26dcc14cd8e/raw/postgres_exporter.sql"
-mv postgres_exporter.sql $POSTGRES_EXPORTER_FOLDER
-echo "postgres_exporter.sql created"
 
 # Create postgres_exporter systemd service
 cat > /etc/systemd/system/postgres_exporter.service << EOF
@@ -67,20 +62,20 @@ groupadd $GROUP
 echo "$USER:$PASSWORD" | chpasswd
 
 # Configure and restart PostgreSQL
-sed -i "s/^#*\s*\(shared_preload_libraries\s*=\s*\).*/\1'pg_stat_statements'/" /etc/postgresql/$POSTGRES_VERSION/main/postgresql.conf
-if grep -q -E pg_stat_statements.track /etc/postgresql/$POSTGRES_VERSION/main/postgresql.conf ; then       
-    sed -i "s/^#*\s*\(pg_stat_statements.track\s*=\s*\).*/\1all/" /etc/postgresql/$POSTGRES_VERSION/main/postgresql.conf
-else echo pg_stat_statements.track = all | tee -a /etc/postgresql/$POSTGRES_VERSION/main/postgresql.conf
+PGCONF_PATH=/etc/postgresql/$POSTGRES_VERSION/main/postgresql.conf
+if grep -q -E pg_stat_statements.track $PGCONF_PATH ; then       
+    sed -i "s/^#*\s*\(pg_stat_statements.track\s*=\s*\).*/\1all/" $PGCONF_PATH
+else echo pg_stat_statements.track = all | tee -a $PGCONF_PATH
 fi
+sudo -i -u postgres psql -c "ALTER SYSTEM SET shared_preload_libraries = 'pg_stat_statements';"
+sudo -i -u postgres psql -c "CREATE USER $USER WITH PASSWORD '$PASSWORD';"
+sudo -i -u postgres psql -c "GRANT pg_monitor to $USER;"
+echo "postgres_exporter configured"
+
 systemctl restart postgresql
 echo "PostgreSQL configured and restarted"
 
-sudo -i -u postgres psql -c "CREATE USER $USER WITH PASSWORD '$PASSWORD';"
-sudo -i -u postgres psql -f $POSTGRES_EXPORTER_FOLDER/postgres_exporter.sql
-echo "postgres_exporter configured"
-
 # Reload systemd daemon and start postgres_exporter
 systemctl daemon-reload
-systemctl start postgres_exporter
-systemctl enable postgres_exporter
+systemctl enable postgres_exporter --now
 systemctl status postgres_exporter --no-pager
