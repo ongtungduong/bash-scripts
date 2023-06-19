@@ -1,8 +1,13 @@
 # !/bin/bash
 
-PASSWORD= # CHANGE PASSWORD
-EXPORTER_VERSION=1.5.0
-EXPORTER_PORT=17017
+DEFAULT_VERSION=1.5.0
+DEFAULT_PORT=17017
+
+read -p "Select node_exporter version [$DEFAULT_VERSION]: " EXPORTER_VERSION
+EXPORTER_VERSION=${EXPORTER_VERSION:-$DEFAULT_VERSION}
+read -p "Set node_exporter port [$DEFAULT_PORT]: " EXPORTER_PORT
+EXPORTER_PORT=${EXPORTER_PORT:-$DEFAULT_PORT}
+read -s -p "Set node_exporter password: " PASSWORD
 
 # Download node_exporter
 sudo wget https://github.com/prometheus/node_exporter/releases/download/v$EXPORTER_VERSION/node_exporter-$EXPORTER_VERSION.linux-amd64.tar.gz
