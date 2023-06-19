@@ -7,14 +7,12 @@ read -p "Select node_exporter version [$DEFAULT_VERSION]: " EXPORTER_VERSION
 EXPORTER_VERSION=${EXPORTER_VERSION:-$DEFAULT_VERSION}
 read -p "Set node_exporter port [$DEFAULT_PORT]: " EXPORTER_PORT
 EXPORTER_PORT=${EXPORTER_PORT:-$DEFAULT_PORT}
-read -s -p "Set node_exporter password: " PASSWORD
 
 # Download node_exporter
-sudo wget https://github.com/prometheus/node_exporter/releases/download/v$EXPORTER_VERSION/node_exporter-$EXPORTER_VERSION.linux-amd64.tar.gz
-sudo tar xzf node_exporter-$EXPORTER_VERSION.linux-amd64.tar.gz
+wget https://github.com/prometheus/node_exporter/releases/download/v$EXPORTER_VERSION/node_exporter-$EXPORTER_VERSION.linux-amd64.tar.gz
+tar xzf node_exporter-$EXPORTER_VERSION.linux-amd64.tar.gz
 sudo mv node_exporter-$EXPORTER_VERSION.linux-amd64/node_exporter /usr/local/bin
-sudo rm -rf node_exporter-$EXPORTER_VERSION.linux-amd64.tar.gz node_exporter-$EXPORTER_VERSION.linux-amd64
-echo "node_exporter v$EXPORTER_VERSION downloaded"
+rm -rf node_exporter-$EXPORTER_VERSION.linux-amd64.tar.gz node_exporter-$EXPORTER_VERSION.linux-amd64
 
 USER=node_exporter
 GROUP=node_exporter
@@ -39,7 +37,6 @@ echo "node_exporter.service created"
 # Create node_exporter user and group
 sudo useradd --no-create-home --shell /bin/false $USER
 sudo groupadd $GROUP
-echo "$USER:$PASSWORD" | chpasswd
 
 # Reload systemd daemon and start node_exporter
 sudo systemctl daemon-reload
